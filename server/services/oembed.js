@@ -16,7 +16,7 @@ module.exports = (
     async fetch(url) {
       let data;
 
-      const matches = url.match(/^(https?:\/\/)?(www\.)?(youtu\.be|youtube\.com|soundcloud\.com|vimeo\.com|tiktok\.com)/i);
+      const matches = url.match(/^(https?:\/\/)?(www\.)?([^/]*\.)?(wistia\.com|youtu\.be|youtube\.com|soundcloud\.com|vimeo\.com|tiktok\.com)/i);
 
       if (matches) {
         try {
@@ -25,7 +25,7 @@ module.exports = (
           let mime;
           let thumbnail;
 
-          switch (matches[3]) {
+          switch (matches[4]) {
             case 'youtu.be':
             case 'youtube.com':
               fetchedData = await axios.get(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`).then(res => res.data);
@@ -52,6 +52,13 @@ module.exports = (
               fetchedData = await axios.get(`https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}&format=json`).then(res => res.data);
               title = fetchedData.title;
               mime = 'video/tiktok';
+              thumbnail = fetchedData.thumbnail_url;
+              break;
+
+            case 'wistia.com':
+              fetchedData = await axios.get(`https://fast.wistia.com/oembed?url=${encodeURIComponent(url)}`).then(res => res.data);
+              title = fetchedData.title;
+              mime = 'video/wistia';
               thumbnail = fetchedData.thumbnail_url;
               break;
           
